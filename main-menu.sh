@@ -17,8 +17,11 @@ DELAY=4 # Number of seconds to display results
 
 #Actions to take based on selection
 function BUILDRELEASE {
+    lastTag=$(git describe --abbrev=0 --tags) 
+
     echo -e "${CYAN}----------------------------------------------------------${SET}"
-    echo -e "${CYAN}-               Generate Release                         -${SET}"
+    echo -e "${CYAN}-               Generate Release :                       -${SET}"
+    echo -e "${CYAN}-               - last release : $lastTag                 -${SET}"
     echo -e "${CYAN}----------------------------------------------------------${SET}"
 
     # establish branch and tag name variables
