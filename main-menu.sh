@@ -63,12 +63,27 @@ function BUILDRELEASE {
         git merge --no-ff $devBranch
 
         echo -e "${GREEN}Started releasing ${YELLOW}$versionLabel${SET} for ${YELLOW}$projectName${SET} .....${SET}"
-   
+
         # pull the latest version of the code from master
         git pull
 
+        # Update version to next release number
+        file="./version.txt"
+
+        # check if file exists. this is not required as echo >> would 
+        # would create it any way. but for this example I've added it for you
+        # -f checks if a file exists. The ! operator negates the result
+        if [ ! -f "$file" ] ; then
+            # if not create the file
+            touch "$file"
+        fi
+        echo "$versionNumber" > "$file"
+        
+        # Commit setting new master branch version	
+        git commit -a -m "Setting master branch version to $versionNumber"
+
         # create empty commit from master branch
-        git commit --allow-empty -m "Creating Branch $releaseBranch"
+        git commit --allow-empty -m "Creating tag $releaseBranch"
 
         # create tag for new version from -master
         git tag $tagName
@@ -92,28 +107,7 @@ function BUILDRELEASE {
         git checkout $masterBranch
 
         # pull the latest version of the code from master
-        git pull
-
-        echo -e "Enter new version number for $projectName"	
-        read newVersionNumer
-
-        # Update version to next release number
-        file="./version.txt"
-
-        # check if file exists. this is not required as echo >> would 
-        # would create it any way. but for this example I've added it for you
-        # -f checks if a file exists. The ! operator negates the result
-        if [ ! -f "$file" ] ; then
-            # if not create the file
-            touch "$file"
-        fi
-        echo "$newVersionNumer" > "$file"
-        
-        # Commit setting new master branch version	
-        git commit -a -m "Setting master branch version to $newVersionNumer"
-
-        # push commit to remote origin
-        git push
+        git pull --rebase
         
         echo -e "${RED}Version File Version is set to new version${SET} ${YELLOW}$newVersionNumer${GREEN}"	
         echo -e "${GREEN}Bye!${SET}"
