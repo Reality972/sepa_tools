@@ -82,8 +82,8 @@ function BUILDRELEASE {
         # push local releaseBranch to remote
         git push -u origin $releaseBranch
 
-        echo "$versionLabel is successfully released for $projectName ...."
-        echo "Checking out into $masterBranch again, where it all started...... :)"
+        echo -e "${YELLOW}$versionLabel${SET} ${GREEN}is successfully released for${SET} ${YELLOW}$projectName${SET} ${GREEN}....${SET}"
+        echo -e "${GREEN}Checking out into${SET} ${YELLOW}$masterBranch${SET} ${GREEN}again, where it all started...... :${SET}"
 
         # checkout to master branch
         git checkout $masterBranch
@@ -91,11 +91,20 @@ function BUILDRELEASE {
         # pull the latest version of the code from master
         git pull
 
-        echo "Enter new version number for $projectName"	
+        echo -e "Enter new version number for $projectName"	
         read newVersionNumer
 
-        # Update Maven version to next release number
-        #mvn versions:set -DnewVersion=$newVersionNumer -DgenerateBackupPoms=false
+        # Update version to next release number
+        file="./version.txt"
+
+        # check if file exists. this is not required as echo >> would 
+        # would create it any way. but for this example I've added it for you
+        # -f checks if a file exists. The ! operator negates the result
+        if [ ! -f "$file" ] ; then
+            # if not create the file
+            touch "$file"
+        fi
+        echo "$newVersionNumer" > "$file"
         
         # Commit setting new master branch version	
         git commit -a -m "Setting master branch version to $newVersionNumer"
@@ -103,11 +112,11 @@ function BUILDRELEASE {
         # push commit to remote origin
         git push
         
-        echo "Maven POM File Version is set to new version $newVersionNumer"	
-        echo "Bye!"
+        echo -e "${RED}Version File Version is set to new version${SET} ${YELLOW}$newVersionNumer${GREEN}"	
+        echo -e "${GREEN}Bye!${SET}"
     else 
-        echo "Please make sure you are on master branch and come back!"
-        echo "Bye!"
+        echo -e "${GREEN}Please make sure you are on master branch and come back!${GREEN}"
+        echo -e "${GREEN}Bye!${SET}"
     fi
 }
 
@@ -126,13 +135,21 @@ function CLEANBRANCH {
     git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d  
 }
 
+function STARTNEWBRANCH {
+    echo "STARTNEWBRANCH"
+}
+
+function BUILDMERGEREQUEST {
+    echo "BUILDMERGEREQUEST"
+}
+
 while [[ $REPLY != 0 ]]; do
     clear
 	echo -e "${CYAN}
     Please Select:
         1. Clean local branch Git with remote branch
         2. Start new branch
-        3. Display Home Space Utilization
+        3. Build merge request
         4. Make a release version
         0. Quit${SET}"
 
@@ -146,19 +163,13 @@ while [[ $REPLY != 0 ]]; do
         fi
         # Start branch
         if [[ $REPLY == 2 ]]; then
-            df -h
+            STARTNEWBRANCH
             sleep $DELAY
         fi
 
         if [[ $REPLY == 3 ]]; then
-            if [[ $(id -u) -eq 0 ]]; then
-                echo "Home Space Utilization (All Users)"
-                du -sh /home/*
-            else
-                echo "Home Space Utilization ($USER)"
-                du -sh $HOME
-            fi
-            sleep $DELAY
+           BUILDMERGEREQUEST
+           sleep $DELAY
         fi
 
         if [[ $REPLY == 4 ]]; then
@@ -170,4 +181,4 @@ while [[ $REPLY != 0 ]]; do
         sleep $DELAY
     fi
 done
-echo "Program terminated."
+echo -e "${GREEN}Program terminated.${SET}"
