@@ -109,8 +109,9 @@ function BUILDRELEASE {
         # pull the latest version of the code from master
         git pull --rebase
         
-        echo -e "${RED}Version File Version is set to new version${SET} ${YELLOW}$newVersionNumer${GREEN}"	
+        echo -e "${RED}Version File Version is set to new version${SET} ${YELLOW}$versionNumber${GREEN}"	
         echo -e "${GREEN}Bye!${SET}"
+        exit;
     else 
         echo -e "${GREEN}Please make sure you are on master branch and come back!${GREEN}"
         echo -e "${GREEN}Bye!${SET}"
